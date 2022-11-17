@@ -1,8 +1,12 @@
 const express = require("express");
 const Joi = require("joi");
 const mongoose = require("mongoose");
+const HomeRoutes = require("./routes/HomeRoutes");
+const UserRoutes = require("./routes/UserRoutes");
 const app = express();
-
+//routes
+app.use(HomeRoutes);
+app.use(UserRoutes);
 //database configuration
 mongoose
   .connect("mongodb://localhost:27017", {
