@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const config = require("config");
 const HomeRoutes = require("./routes/HomeRoutes");
 const UserRoutes = require("./routes/UserRoutes");
+const CustomerRoutes = require("./routes/CustomerRoutes");
 const app = express();
 //middleware
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use(express.json());
 //routes
 app.use(HomeRoutes);
 app.use(UserRoutes);
+app.use(CustomerRoutes);
 //engine
 app.set("view engine", "pug");
 app.set("views", "./views");
