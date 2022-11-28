@@ -1,15 +1,21 @@
 const express = require("express");
 const Joi = require("joi");
 const mongoose = require("mongoose");
+const config = require("config");
 const HomeRoutes = require("./routes/HomeRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const app = express();
+//middleware
+app.use(express.json());
+
 //routes
 app.use(HomeRoutes);
 app.use(UserRoutes);
-//database configuration
+//engine
+app.set("view engine", "pug");
+app.set("views", "./views");
 mongoose
-  .connect("mongodb://localhost:27017", {
+  .connect("mongodb://localhost:27017/awsomereturant", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
