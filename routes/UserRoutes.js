@@ -20,14 +20,11 @@ router.post("/api/users/register", async (req, res) => {
   const pass = await bcrypt.hash(req.body.password, salt);
   user.password = pass;
   user = await user.save();
-  const data = {
-    _id: user._id,
-    name: user.name,
-  };
-  const token = jwt.sign(data, config.get("jwtPrivateKey"));
+
+  const token = await user.generateAuthToken();
   res
     .header("x-auth-token", token)
-    .send(_.pick(req.body, ["name", "phone", "_id"]));
+    .send(_.pick(req.body, ["name", "phone", "_id", "role"]));
 });
 router.post("/api/users/login", async (req, res) => {
   const { error } = loginValidator(req.body);

@@ -1,4 +1,5 @@
 const express = require("express");
+const Admin = require("../middlewares/Admin");
 const Auth = require("../middlewares/Auth");
 const router = express.Router();
 const Customer = require("../models/CustomerModel");
@@ -6,11 +7,12 @@ const {
   validateCreateCustomer,
   validateUpdateCustomer,
 } = require("../validators/CustomerValidator");
+
 router.get("/api/customers", Auth, async (req, res) => {
   const customers = await Customer.find();
   res.send(customers);
 });
-router.get("/api/customers/:id", async (req, res) => {
+router.get("/api/customers/:id", [Auth, Admin], async (req, res) => {
   const mongoose = require("mongoose");
   if (!mongoose.isValidObjectId(req.params.id))
     return res.status(400).send("bad id");
@@ -24,7 +26,8 @@ router.post("/api/customers", async (req, res) => {
   let customer = new Customer({
     name: req.body.name,
   });
-  customer = await customer.save;
+
+  customer = await customer.save();
   res.send(customer);
 });
 router.put("/api/customers/:customerId", async (req, res) => {
