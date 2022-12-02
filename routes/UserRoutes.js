@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const _ = require("lodash");
 const Kavenegar = require("kavenegar");
+const NodeCache = require("node-cache");
+
 const api = Kavenegar.KavenegarApi({
   apikey: "",
 });
@@ -53,7 +55,8 @@ router.get("/api/users/sendCode", Auth, async (req, res) => {
   const user = await UserModel.findById(id);
   if (!user) res.status(404).send("user not found");
   const number = Math.floor(Math.random() * 90000 + 10000);
-
+  const myCache = new NodeCache({ stdTTL: 3 * 60 * 60, checkperiod: 8 * 60 });
+  myCache.set(req.user.phone, number);
   api.Send(
     {
       message: `verification code:${number}`,
