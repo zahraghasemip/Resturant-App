@@ -27,6 +27,7 @@
     "kavenegar": "^1.1.4",
     "lodash": "^4.17.21",
     "mongoose": "^6.7.2",
+    "node-cache": "^5.1.2",
     "nodemon": "^2.0.20",
     "pug": "^3.0.2"
   }
