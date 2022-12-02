@@ -4,11 +4,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const _ = require("lodash");
+const Kavenegar = require("kavenegar");
+const api = Kavenegar.KavenegarApi({
+  apikey: "",
+});
 const UserModel = require("../models/UserModel");
 const {
   loginValidator,
   registerValidator,
 } = require("../validators/UserValidator");
+const Auth = require("../middlewares/Auth");
 router.post("/api/users/register", async (req, res) => {
   const { error } = registerValidator(req.body);
   if (error) return res.status(400).send({ message: error.message });
@@ -42,5 +47,22 @@ router.post("/api/users/login", async (req, res) => {
   };
   const token = jwt.sign(data, config.get("jwtPrivateKey"));
   res.header("x-auth-token", token).status(200).send({ success: true });
+});
+router.get("/api/users/sendCode", Auth, async (req, res) => {
+  const id = req.user._id;
+  const user = await UserModel.findById(id);
+  if (!user) res.status(404).send("user not found");
+  const number = Math.floor(Math.random() * 90000 + 10000);
+
+  api.Send(
+    {
+      message: `verification code:${number}`,
+      sender: "1000596446",
+      receptor: user.phone,
+    },
+    function (responce, status) {
+      res.status(status).send(responce);
+    },
+  );
 });
 module.exports = router;

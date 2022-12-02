@@ -24,6 +24,7 @@
     "joi": "^17.7.0",
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^8.5.1",
+    "kavenegar": "^1.1.4",
     "lodash": "^4.17.21",
     "mongoose": "^6.7.2",
     "nodemon": "^2.0.20",
