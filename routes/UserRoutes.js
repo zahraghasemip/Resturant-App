@@ -6,6 +6,7 @@ const config = require("config");
 const _ = require("lodash");
 const Kavenegar = require("kavenegar");
 const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 3 * 60 * 60, checkperiod: 8 * 60 });
 
 const api = Kavenegar.KavenegarApi({
   apikey: "",
@@ -55,17 +56,27 @@ router.get("/api/users/sendCode", Auth, async (req, res) => {
   const user = await UserModel.findById(id);
   if (!user) res.status(404).send("user not found");
   const number = Math.floor(Math.random() * 90000 + 10000);
-  const myCache = new NodeCache({ stdTTL: 3 * 60 * 60, checkperiod: 8 * 60 });
-  myCache.set(req.user.phone, number);
+  myCache.set(req.user._id, number);
   api.Send(
     {
       message: `verification code:${number}`,
-      sender: "1000596446",
+      sender: "",
       receptor: user.phone,
     },
     function (responce, status) {
       res.status(status).send(responce);
     },
   );
+});
+router.post("/api/users/verifyCode", Auth, async (req, res) => {
+  if (req.body.code) return res.status(400).send("send sms code");
+  const code = req.body.code;
+  const lastCode = myCache.get(req.user._id);
+  if (code == lastCode) {
+    const user = await UserModel.findById(req.user._id);
+    user.active = true;
+    await user.save();
+    res.status(200).send(true);
+  } else res.status(400).send(false);
 });
 module.exports = router;
