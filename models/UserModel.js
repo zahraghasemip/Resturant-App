@@ -9,6 +9,7 @@ const userSchema = new Schema({
   phone: { type: String, unique: true, minlength: 11, maxlength: 11 },
   password: { type: String, required: true },
   role: { type: String, required: true, default: "user" },
+  active: { type: Boolean, default: false },
 });
 userSchema.methods.generateAuthToken = function () {
   const data = {
