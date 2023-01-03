@@ -68,15 +68,19 @@ router.get("/api/users/sendCode", Auth, async (req, res) => {
     },
   );
 });
-router.post("/api/users/verifyCode", Auth, async (req, res) => {
-  if (req.body.code) return res.status(400).send("send sms code");
-  const code = req.body.code;
-  const lastCode = myCache.get(req.user._id);
-  if (code == lastCode) {
-    const user = await UserModel.findById(req.user._id);
-    user.active = true;
-    await user.save();
-    res.status(200).send(true);
-  } else res.status(400).send(false);
+router.post("/api/users/verifyCode", Auth, async (req, res, next) => {
+  try {
+    if (req.body.code) return res.status(400).send("send sms code");
+    const code = req.body.code;
+    const lastCode = myCache.get(req.user._id);
+    if (code == lastCode) {
+      const user = await UserModel.findById(req.user._id);
+      user.active = true;
+      await user.save();
+      res.status(200).send(true);
+    } else res.status(400).send(false);
+  } catch (error) {
+    next(error);
+  }
 });
 module.exports = router;
