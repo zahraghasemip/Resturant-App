@@ -13,6 +13,9 @@ app.use(express.json());
 app.use(HomeRoutes);
 app.use(UserRoutes);
 app.use(CustomerRoutes);
+app.use((error, req, res, next) => {
+  res.status(500).send("err 500");
+});
 //engine
 app.set("view engine", "pug");
 app.set("views", "./views");
