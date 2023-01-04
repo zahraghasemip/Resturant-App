@@ -6,6 +6,7 @@ const config = require("config");
 const _ = require("lodash");
 const Kavenegar = require("kavenegar");
 const NodeCache = require("node-cache");
+require("express-async-errors");
 const myCache = new NodeCache({ stdTTL: 3 * 60 * 60, checkperiod: 8 * 60 });
 
 const api = Kavenegar.KavenegarApi({
@@ -68,33 +69,15 @@ router.get("/api/users/sendCode", Auth, async (req, res) => {
     },
   );
 });
-function errorHandler(func) {
-  return async function (req, res, next) {
-    try {
-      await func(req, res);
-    } catch (error) {
-      next(error);
-    }
-  };
-}
-
-router.post(
-  "/api/users/verifyCode",
-  Auth,
-  errorHandler(async (req, res, next) => {
-    try {
-      if (req.body.code) return res.status(400).send("send sms code");
-      const code = req.body.code;
-      const lastCode = myCache.get(req.user._id);
-      if (code == lastCode) {
-        const user = await UserModel.findById(req.user._id);
-        user.active = true;
-        await user.save();
-        res.status(200).send(true);
-      } else res.status(400).send(false);
-    } catch (error) {
-      next(error);
-    }
-  }),
-);
+router.post("/api/users/verifyCode", async (req, res, next) => {
+  if (req.body.code) return res.status(400).send("send sms code");
+  const code = req.body.code;
+  const lastCode = myCache.get(req.user._id);
+  if (code == lastCode) {
+    const user = await UserModel.findById(req.user._id);
+    user.active = true;
+    await user.save();
+    res.status(200).send(true);
+  } else res.status(400).send(false);
+});
 module.exports = router;
