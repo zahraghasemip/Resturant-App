@@ -5,6 +5,8 @@ const config = require("config");
 const HomeRoutes = require("./routes/HomeRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const CustomerRoutes = require("./routes/CustomerRoutes");
+const ErrorHandling = require("./middlewares/ErrorHandling");
+require("express-async-errors");
 const app = express();
 //middleware
 app.use(express.json());
@@ -13,9 +15,7 @@ app.use(express.json());
 app.use(HomeRoutes);
 app.use(UserRoutes);
 app.use(CustomerRoutes);
-app.use((error, req, res, next) => {
-  res.status(500).send("err 500");
-});
+app.use(ErrorHandling);
 //engine
 app.set("view engine", "pug");
 app.set("views", "./views");
