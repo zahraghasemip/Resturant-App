@@ -2,12 +2,14 @@ const express = require("express");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 const config = require("config");
+const winston = require("winston");
 const HomeRoutes = require("./routes/HomeRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const CustomerRoutes = require("./routes/CustomerRoutes");
 const ErrorHandling = require("./middlewares/ErrorHandling");
 require("express-async-errors");
 const app = express();
+winston.add(new winston.transports.File({ filename: "errlog.log" }));
 //middleware
 app.use(express.json());
 
